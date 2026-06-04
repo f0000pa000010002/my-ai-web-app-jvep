@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusHub - Chat & Submission Portal</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+<style>
+/* --- CSS: /styles.css --- */
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+/* Custom Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+  }
+}
+
+.glow-active {
+  animation: pulse-glow 3s infinite;
+}
+
+/* Custom Glassmorphism */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px border rgba(255, 255, 255, 0.05);
+}
+
+/* Smooth Transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+</style></head>
+<body class="h-full font-sans flex flex-col overflow-hidden">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between z-30 shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
+        <i data-lucide="layers" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+          NexusHub <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-mono">v2.2</span>
+        </h1>
+        <p class="text-xs text-slate-400">Secure Submission & Global Chat</p>
+      </div>
+    </div>
+
+    <!-- Credentials Quick Badge -->
+    <div class="hidden lg:flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs">
+      <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+      <span class="text-slate-400 font-mono">Client ID:</span>
+      <span id="header-client-id-badge" class="text-indigo-300 font-mono font-semibold">3%bZpDA53afRLSX</span>
+    </div>
+
+    <!-- Auth Status / User Profile -->
+    <div id="auth-header-container" class="flex items-center gap-4">
+      <!-- Dynamic Content via JS -->
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-slate-900/50 border-r border-slate-800 flex flex-col justify-between p-4 shrink-0 hidden md:flex">
+      <div class="space-y-6">
+        <div class="space-y-1">
+          <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Navigation</p>
+          <nav class="space-y-1">
+            <button onclick="switchTab('feed')" id="tab-btn-feed" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+              <span>Approved Feed</span>
+            </button>
+            <button onclick="switchTab('submit')" id="tab-btn-submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Submit Request</span>
+            </button>
+            <button onclick="switchTab('chat')" id="tab-btn-chat" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+              <i data-lucide="message-square" class="w-4 h-4"></i>
+              <span>Global Chat</span>
+              <span class="ml-auto bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">LIVE</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="space-y-1">
+          <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Management</p>
+          <nav class="space-y-1">
+            <button onclick="switchTab('admin')" id="tab-btn-admin" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+              <div class="flex items-center gap-3">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Admin Panel</span>
+              </div>
+              <span id="admin-badge-count" class="bg-rose-500/20 text-rose-400 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+            </button>
+            <button onclick="switchTab('logs')" id="tab-btn-logs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+              <i data-lucide="terminal" class="w-4 h-4"></i>
+              <span>OAuth Logs</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Credentials Config Widget -->
+        <div class="pt-4 border-t border-slate-800/60 space-y-2">
+          <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Credentials Config</p>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 space-y-2 text-[11px] font-mono">
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase">Supabase Client ID</span>
+              <input type="text" id="sidebar-supabase-id" onchange="updateConfigFromSidebar()" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-indigo-300 focus:outline-none focus:border-indigo-500 text-xs">
+            </div>
+            <div>
+              <span class="text-slate-500 block text-[9px] uppercase">Google Client ID</span>
+              <input type="text" id="sidebar-google-id" onchange="updateConfigFromSidebar()" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-emerald-300 focus:outline-none focus:border-indigo-500 text-xs truncate" title="Google Client ID">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Stats -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>System Status</span>
+          <span class="flex items-center gap-1 text-emerald-400 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Operational
+          </span>
+        </div>
+        <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div class="h-full bg-indigo-500 w-full rounded-full"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-slate-950 relative">
+      
+      <!-- Mobile Navigation Bar -->
+      <div class="md:hidden bg-slate-900 border-b border-slate-800 p-2 flex justify-around shrink-0">
+        <button onclick="switchTab('feed')" class="mobile-tab-btn flex flex-col items-center gap-1 p-2 text-indigo-400" id="mobile-tab-feed">
+          <i data-lucide="layout-grid" class="w-5 h-5"></i>
+          <span class="text-[10px]">Feed</span>
+        </button>
+        <button onclick="switchTab('submit')" class="mobile-tab-btn flex flex-col items-center gap-1 p-2 text-slate-400" id="mobile-tab-submit">
+          <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          <span class="text-[10px]">Submit</span>
+        </button>
+        <button onclick="switchTab('chat')" class="mobile-tab-btn flex flex-col items-center gap-1 p-2 text-slate-400" id="mobile-tab-chat">
+          <i data-lucide="message-square" class="w-5 h-5"></i>
+          <span class="text-[10px]">Chat</span>
+        </button>
+        <button onclick="switchTab('admin')" class="mobile-tab-btn flex flex-col items-center gap-1 p-2 text-slate-400" id="mobile-tab-admin">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+          <span class="text-[10px]">Admin</span>
+        </button>
+        <button onclick="switchTab('logs')" class="mobile-tab-btn flex flex-col items-center gap-1 p-2 text-slate-400" id="mobile-tab-logs">
+          <i data-lucide="terminal" class="w-5 h-5"></i>
+          <span class="text-[10px]">Logs</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Container -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6" id="tab-content-viewport">
+        
+        <!-- FEED TAB -->
+        <section id="tab-feed" class="space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="sparkles" class="text-indigo-400 w-6 h-6"></i> Approved Submissions
+              </h2>
+              <p class="text-slate-400 text-sm">Explore high-quality submissions approved by the administrator.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Filter:</span>
+              <select id="feed-filter" onchange="renderFeed()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:border-indigo-500">
+                <option value="all">All Submissions</option>
+                <option value="recent">Most Recent</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Feed Grid -->
+          <div id="feed-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Feed Cards -->
+          </div>
+        </section>
+
+        <!-- SUBMIT TAB -->
+        <section id="tab-submit" class="hidden max-w-3xl mx-auto space-y-6">
+          <div class="border-b border-slate-800 pb-5">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="file-up" class="text-indigo-400 w-6 h-6"></i> Submit New Request
+            </h2>
+            <p class="text-slate-400 text-sm">Fill out the details below. Your submission will be routed to <span class="text-indigo-400 font-semibold">kfmughal79@gmail.com</span> for review.</p>
+          </div>
+
+          <!-- Submit Form -->
+          <form id="submission-form" onsubmit="handleFormSubmit(event)" class="space-y-6 bg-slate-900/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
+            
+            <!-- Step 1: Select Image from Gallery -->
+            <div class="space-y-3">
+              <label class="block text-sm font-semibold text-slate-300">1. Select Gallery Image</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="gallery-picker">
+                <!-- Dynamic Gallery Images -->
+              </div>
+              <p class="text-xs text-slate-500">Or upload a custom image below to override the gallery selection.</p>
+            </div>
+
+            <!-- Step 2: Custom File Upload -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-300">2. Custom Image / File Attachment (Optional)</label>
+              <div class="border-2 border-dashed border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 transition-all bg-slate-950/50 flex flex-col items-center justify-center gap-2 cursor-pointer relative">
+                <input type="file" id="file-upload" accept="image/*,application/pdf" onchange="handleFileChange(event)" class="absolute inset-0 opacity-0 cursor-pointer">
+                <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500"></i>
+                <span class="text-sm text-slate-300" id="upload-label">Click to upload custom file</span>
+                <span class="text-xs text-slate-500">Supports PNG, JPG, PDF (Max 5MB)</span>
+                <div id="file-preview-container" class="hidden mt-2 p-2 bg-slate-900 rounded-lg border border-slate-800 flex items-center gap-2">
+                  <img id="file-preview-img" class="w-10 h-10 object-cover rounded hidden">
+                  <span id="file-preview-name" class="text-xs text-indigo-400 font-mono"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Description -->
+            <div class="space-y-2">
+              <label for="submit-description" class="block text-sm font-semibold text-slate-300">3. Description</label>
+              <textarea id="submit-description" required rows="3" placeholder="Describe your submission in detail..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all"></textarea>
+            </div>
+
+            <!-- Step 4: Message Input -->
+            <div class="space-y-2">
+              <label for="submit-message" class="block text-sm font-semibold text-slate-300">4. Message to Admin</label>
+              <input type="text" id="submit-message" required placeholder="Direct message to kfmughal79@gmail.com..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
+              <i data-lucide="send" class="w-4 h-4"></i> Submit to Admin Queue
+            </button>
+          </form>
+        </section>
+
+        <!-- GLOBAL CHAT TAB -->
+        <section id="tab-chat" class="hidden h-full flex flex-col space-y-4 max-w-5xl mx-auto">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4 shrink-0">
+            <div>
+              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="message-square" class="text-emerald-400 w-6 h-6"></i> Global Chatroom
+              </h2>
+              <p class="text-slate-400 text-sm">Connect with everyone instantly in this single global channel.</p>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-xs text-slate-300 font-medium" id="online-counter">12 Online</span>
+            </div>
+          </div>
+
+          <!-- Chat Layout -->
+          <div class="flex-1 flex gap-4 min-h-0">
+            <!-- Chat Messages Area -->
+            <div class="flex-1 flex flex-col bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden">
+              <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Dynamic Chat Messages -->
+              </div>
+
+              <!-- Chat Input Form -->
+              <form id="chat-form" onsubmit="handleSendChatMessage(event)" class="p-4 bg-slate-900/80 border-t border-slate-800 flex gap-2">
+                <input type="text" id="chat-input" required placeholder="Type a message to the global chat..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 rounded-xl transition-all flex items-center justify-center gap-2">
+                  <i data-lucide="send" class="w-4 h-4"></i>
+                  <span class="hidden sm:inline">Send</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Active Users Sidebar (Desktop) -->
+            <div class="w-64 bg-slate-900/40 border border-slate-800 rounded-2xl p-4 hidden lg:block overflow-y-auto">
+              <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Active Users</h3>
+              <div class="space-y-3" id="active-users-list">
+                <!-- Dynamic Active Users -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN PANEL TAB -->
+        <section id="tab-admin" class="hidden space-y-6">
+          <!-- Access Denied Screen (Default) -->
+          <div id="admin-access-denied" class="flex flex-col items-center justify-center text-center py-16 space-y-4">
+            <div class="bg-rose-500/10 p-4 rounded-full border border-rose-500/20 text-rose-400">
+              <i data-lucide="shield-alert" class="w-12 h-12"></i>
+            </div>
+            <div class="space-y-2 max-w-md">
+              <h3 class="text-xl font-bold text-white">Access Restricted</h3>
+              <p class="text-slate-400 text-sm">Only the administrator account (<span class="text-rose-400 font-mono">kfmughal79@gmail.com</span>) can access this panel to approve or reject submissions.</p>
+            </div>
+            <button onclick="triggerAdminQuickLogin()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+              <i data-lucide="key-round" class="w-4 h-4"></i> Quick Login as Admin
+            </button>
+          </div>
+
+          <!-- Admin Dashboard (Hidden until authorized) -->
+          <div id="admin-dashboard" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div>
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                  <i data-lucide="shield-check" class="text-rose-400 w-6 h-6"></i> Admin Control Panel
+                </h2>
+                <p class="text-slate-400 text-sm">Review pending submissions. Approved items go live; rejected items are permanently deleted.</p>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs text-slate-400">
+                  Pending Queue: <span id="admin-queue-count" class="text-rose-400 font-bold">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pending Submissions Table/List -->
+            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden">
+              <div class="p-4 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-white">Pending Requests Queue</h3>
+                <span class="text-xs text-slate-500">Action is permanent</span>
+              </div>
+              <div class="divide-y divide-slate-800" id="admin-pending-list">
+                <!-- Dynamic Pending Submissions -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- OAUTH LOGS TAB -->
+        <section id="tab-logs" class="hidden space-y-6">
+          <div class="border-b border-slate-800 pb-5 flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="terminal" class="text-indigo-400 w-6 h-6"></i> Supabase OAuth Handshake Logs
+              </h2>
+              <p class="text-slate-400 text-sm">Real-time network requests and token validation logs for the Supabase endpoints.</p>
+            </div>
+            <button onclick="clearLogs()" class="text-xs text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg transition-all">
+              Clear Console
+            </button>
+          </div>
+
+          <!-- Logs Console -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden font-mono text-xs flex flex-col h-[500px]">
+            <div class="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between text-slate-400">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                <span class="ml-2 text-[10px] tracking-wider uppercase font-bold">Supabase Auth Debugger</span>
+              </div>
+              <span class="text-[10px]">Active Connection</span>
+            </div>
+            <div id="logs-console-output" class="flex-1 p-4 overflow-y-auto space-y-3 text-slate-300">
+              <!-- Dynamic Logs -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- SUPABASE OAUTH SIMULATOR MODAL -->
+  <div id="oauth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="oauth-modal-card">
+      <!-- Modal Header -->
+      <div class="bg-indigo-950/50 p-6 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <div>
+            <h3 class="text-md font-bold text-white">Supabase OAuth Portal</h3>
+            <p class="text-xs text-slate-400">Secure Single Sign-On</p>
+          </div>
+        </div>
+        <button onclick="closeOAuthModal()" class="text-slate-400 hover:text-white transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Select Identity Provider</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="submitOAuthLogin()" class="flex items-center justify-center gap-2 bg-slate-950 border border-indigo-500/30 hover:border-indigo-500 text-white py-2.5 rounded-xl text-xs font-medium transition-all">
+              <i data-lucide="github" class="w-4 h-4"></i> GitHub
+            </button>
+            <button onclick="submitGoogleOAuthLogin()" class="flex items-center justify-center gap-2 bg-slate-950 border border-emerald-500/30 hover:border-emerald-500 text-white py-2.5 rounded-xl text-xs font-medium transition-all">
+              <i data-lucide="chrome" class="w-4 h-4 text-emerald-400"></i> Google OAuth
+            </button>
+          </div>
+        </div>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider">Or Enter Email</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <!-- Email Input -->
+        <div class="space-y-2">
+          <label for="oauth-email" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Address</label>
+          <input type="email" id="oauth-email" placeholder="e.g., kfmughal79@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all">
+        </div>
+
+        <!-- Quick Select Accounts -->
+        <div class="space-y-2">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Quick Select Accounts:</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="quickFillEmail('kfmughal79@gmail.com')" class="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs px-3 py-1.5 rounded-lg transition-all font-mono">
+              kfmughal79@gmail.com (Admin)
+            </button>
+            <button onclick="quickFillEmail('alex.designer@gmail.com')" class="bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs px-3 py-1.5 rounded-lg transition-all font-mono">
+              alex.designer@gmail.com
+            </button>
+          </div>
+        </div>
+
+        <!-- Endpoint Info -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5 text-[10px] font-mono text-slate-400">
+          <div class="flex justify-between">
+            <span class="text-indigo-400">SUPABASE CLIENT ID:</span>
+            <span class="truncate max-w-[200px] text-slate-200 font-bold" id="modal-supabase-id-display">3%bZpDA53afRLSX</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-emerald-400">GOOGLE CLIENT ID:</span>
+            <span class="truncate max-w-[200px] text-slate-200 font-bold" id="modal-google-id-display" title="1046899344173-gks18r3o0ogkogmld6i2udg8v26m18bm.apps.googleusercontent.com">1046899344173...</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-indigo-400">AUTH ENDPOINT:</span>
+            <span class="truncate max-w-[200px]" title="https://3%25bZpDA53afRLSX.supabase.co/auth/v1/oauth/authorize">.../oauth/authorize</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-950 p-4 border-t border-slate-800 flex justify-end gap-3">
+        <button onclick="closeOAuthModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-all">
+          Cancel
+        </button>
+        <button onclick="submitOAuthLogin()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2">
+          <i data-lucide="key-round" class="w-4 h-4"></i> Authorize & Login
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE LIGHTBOX MODAL -->
+  <div id="lightbox-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md flex items-center justify-center z-50 hidden" onclick="closeLightbox()">
+    <div class="max-w-4xl max-h-[85vh] p-4 relative flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+      <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-slate-400 hover:text-white transition-all">
+        <i data-lucide="x" class="w-8 h-8"></i>
+      </button>
+      <img id="lightbox-img" class="max-w-full max-h-[75vh] rounded-xl border border-slate-800 shadow-2xl object-contain">
+      <p id="lightbox-caption" class="text-slate-300 text-sm mt-4 text-center max-w-xl"></p>
+    </div>
+  </div>
+
+  <!-- Global Notification Toast -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  
+  
+  
+<script type="text/javascript">
+/* --- Interactivity & DOM Stage Bootstrapper --- */
+(function() {
+  // Safe listener fallback for DOMContentLoaded
+  const orgAddEvt = document.addEventListener;
+  document.addEventListener = function(type, listener, options) {
+    if (type === 'DOMContentLoaded' && document.readyState !== 'loading') {
+      setTimeout(listener, 1);
+    } else {
+      orgAddEvt.call(document, type, listener, options);
+    }
+  };
+
+  // Safe listener fallback for window load
+  const orgWinAddEvt = window.addEventListener;
+  window.addEventListener = function(type, listener, options) {
+    if (type === 'load' && document.readyState === 'complete') {
+      setTimeout(listener, 1);
+    } else {
+      orgWinAddEvt.call(window, type, listener, options);
+    }
+  };
+
+  // Safe callback mapping for window.onload on late loads
+  let winOnload = null;
+  Object.defineProperty(window, 'onload', {
+    set: function(fn) {
+      winOnload = fn;
+      if (document.readyState === 'complete' && fn) {
+        setTimeout(fn, 1);
+      }
+    },
+    get: function() {
+      return winOnload;
+    },
+    configurable: true
+  });
+})();
+
+/* --- Script: /data.js --- */
+// Static lists, default state, and gallery images
+window.AppStore = {
+  // Dynamic Credentials Config
+  config: {
+    supabaseClientId: '3%bZpDA53afRLSX',
+    googleClientId: '1046899344173-gks18r3o0ogkogmld6i2udg8v26m18bm.apps.googleusercontent.com',
+    adminEmail: 'kfmughal79@gmail.com'
+  },
+
+  // Curated gallery images for submission picker
+  galleryImages: [
+    {
+      id: 'gal-1',
+      url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+      title: 'Abstract Fluid Art'
+    },
+    {
+      id: 'gal-2',
+      url: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=600&q=80',
+      title: 'Neon Geometry'
+    },
+    {
+      id: 'gal-3',
+      url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80',
+      title: 'Cyberpunk Alley'
+    },
+    {
+      id: 'gal-4',
+      url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80',
+      title: 'Surrealist Portrait'
+    }
+  ],
+
+  // Default submissions (pre-approved to make the feed look beautiful instantly)
+  defaultSubmissions: [
+    {
+      id: 'sub-1',
+      email: 'alex.designer@gmail.com',
+      description: 'A stunning exploration of fluid dynamics and vibrant color gradients. Perfect for modern desktop wallpapers.',
+      message: 'Hope you like this abstract piece!',
+      image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+      file: null,
+      status: 'approved',
+      timestamp: new Date(Date.now() - 3600000 * 4).toISOString() // 4 hours ago
+    },
+    {
+      id: 'sub-2',
+      email: 'sarah.art@yahoo.com',
+      description: 'Cyberpunk alleyway concept art showcasing neon reflections and rainy atmosphere.',
+      message: 'Admin, please approve this for the main feed!',
+      image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80',
+      file: null,
+      status: 'approved',
+      timestamp: new Date(Date.now() - 3600000 * 12).toISOString() // 12 hours ago
+    }
+  ],
+
+  // Default chat messages
+  defaultChatMessages: [
+    {
+      id: 'msg-1',
+      email: 'alex.designer@gmail.com',
+      message: 'Hey everyone! Welcome to the global chat room.',
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'
+    },
+    {
+      id: 'msg-2',
+      email: 'sarah.art@yahoo.com',
+      message: 'Just submitted my cyberpunk artwork. Hope the admin approves it soon!',
+      timestamp: new Date(Date.now() - 400000).toISOString(),
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80'
+    },
+    {
+      id: 'msg-3',
+      email: 'kfmughal79@gmail.com',
+      message: 'Welcome! I am reviewing submissions actively. Keep them coming!',
+      timestamp: new Date(Date.now() - 200000).toISOString(),
+      avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80'
+    }
+  ],
+
+  // Simulated active users in the chat
+  activeUsers: [
+    { email: 'kfmughal79@gmail.com', name: 'Admin (kfmughal79)', status: 'online', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80' },
+    { email: 'alex.designer@gmail.com', name: 'Alex Designer', status: 'online', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' },
+    { email: 'sarah.art@yahoo.com', name: 'Sarah Art', status: 'online', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+    { email: 'john.dev@outlook.com', name: 'John Dev', status: 'idle', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' }
+  ]
+};
+
+
+/* --- Script: /utils.js --- */
+// Web Audio API Synthesizer for interactive sound effects
+window.AudioEngine = {
+  ctx: null,
+
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+
+  playPop() {
+    this.init();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
+
+    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.1);
+  },
+
+  playSuccess() {
+    this.init();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
+    osc.frequency.setValueAtTime(659.25, this.ctx.currentTime + 0.1); // E5
+    osc.frequency.setValueAtTime(783.99, this.ctx.currentTime + 0.2); // G5
+
+    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.4);
+  },
+
+  playTrash() {
+    this.init();
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.2);
+
+    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.2);
+  }
+};
+
+// LocalStorage State Persistence Helpers
+window.StorageHelper = {
+  save(key, data) {
+    localStorage.setItem(`nexushub_${key}`, JSON.stringify(data));
+  },
+  load(key, defaultValue) {
+    const data = localStorage.getItem(`nexushub_${key}`);
+    return data ? JSON.parse(data) : defaultValue;
+  }
+};
+
+// Supabase OAuth Handshake Logger
+window.NetworkLogger = {
+  logs: [],
+  onLogUpdate: null,
+
+  log(method, url, payload, response, status = 200) {
+    const logEntry = {
+      id: 'log-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      timestamp: new Date().toISOString(),
+      method,
+      url,
+      payload: payload ? JSON.stringify(payload, null, 2) : null,
+      response: response ? JSON.stringify(response, null, 2) : null,
+      status
+    };
+    this.logs.unshift(logEntry);
+    if (this.onLogUpdate) {
+      this.onLogUpdate(this.logs);
+    }
+  },
+
+  clear() {
+    this.logs = [];
+    if (this.onLogUpdate) {
+      this.onLogUpdate(this.logs);
+    }
+  }
+};
+
+
+/* --- Script: /script.js --- */
+// Main Application Controller & State Orchestration
+
+// State variables
+let currentUser = null;
+let submissions = [];
+let chatMessages = [];
+let selectedGalleryImage = null;
+let customUploadedFile = null;
+let activeTab = 'feed';
+let appConfig = {};
+
+// Initialize Application
+document.addEventListener('DOMContentLoaded', () => {
+  // Load state from local storage or use defaults
+  currentUser = StorageHelper.load('user', null);
+  submissions = StorageHelper.load('submissions', AppStore.defaultSubmissions);
+  chatMessages = StorageHelper.load('chat_messages', AppStore.defaultChatMessages);
+  
+  // Load credentials config or use defaults
+  appConfig = StorageHelper.load('config', AppStore.config);
+
+  // Setup Network Logger callback
+  NetworkLogger.onLogUpdate = (logs) => {
+    renderLogs(logs);
+  };
+
+  // Initial Render
+  renderAuthHeader();
+  renderGalleryPicker();
+  renderFeed();
+  renderChat();
+  renderAdminPanel();
+  updateAdminBadge();
+  syncConfigUI();
+  switchTab('feed');
+
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Start simulated active chat users loop
+  startSimulatedChatActivity();
+});
+
+// Sync configuration values to UI elements
+function syncConfigUI() {
+  const sidebarSupabase = document.getElementById('sidebar-supabase-id');
+  const sidebarGoogle = document.getElementById('sidebar-google-id');
+  const headerBadge = document.getElementById('header-client-id-badge');
+  const modalSupabase = document.getElementById('modal-supabase-id-display');
+  const modalGoogle = document.getElementById('modal-google-id-display');
+
+  if (sidebarSupabase) sidebarSupabase.value = appConfig.supabaseClientId;
+  if (sidebarGoogle) sidebarGoogle.value = appConfig.googleClientId;
+  if (headerBadge) headerBadge.textContent = appConfig.supabaseClientId;
+  if (modalSupabase) modalSupabase.textContent = appConfig.supabaseClientId;
+  if (modalGoogle) {
+    modalGoogle.textContent = appConfig.googleClientId.substring(0, 15) + '...';
+    modalGoogle.title = appConfig.googleClientId;
+  }
+}
+
+// Update config from sidebar inputs
+function updateConfigFromSidebar() {
+  const sidebarSupabase = document.getElementById('sidebar-supabase-id').value.trim();
+  const sidebarGoogle = document.getElementById('sidebar-google-id').value.trim();
+
+  if (sidebarSupabase) appConfig.supabaseClientId = sidebarSupabase;
+  if (sidebarGoogle) appConfig.googleClientId = sidebarGoogle;
+
+  StorageHelper.save('config', appConfig);
+  syncConfigUI();
+  showToast('Credentials configuration updated!', 'success');
+}
+
+// Render Auth Header / Profile Card
+function renderAuthHeader() {
+  const container = document.getElementById('auth-header-container');
+  if (!container) return;
+
+  if (currentUser) {
+    const isAdmin = currentUser.email === 'kfmughal79@gmail.com';
+    container.innerHTML = `
+      <div class="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl p-2 pr-4">
+        <img src="${currentUser.avatar}" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-indigo-500/30">
+        <div class="text-left">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-white truncate max-w-[120px]">${currentUser.email}</span>
+            ${isAdmin ? '<span class="bg-rose-500/20 text-rose-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold border border-rose-500/30">Admin</span>' : '<span class="bg-indigo-500/20 text-indigo-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold border border-indigo-500/30">User</span>'}
+          </div>
+          <p class="text-[10px] text-slate-400">Logged in via Supabase</p>
+        </div>
+        <button onclick="handleLogout()" class="text-slate-400 hover:text-rose-400 transition-all ml-2" title="Logout">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button onclick="openOAuthModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20">
+        <i data-lucide="key-round" class="w-4 h-4"></i>
+        <span>Login with Supabase</span>
+      </button>
+    `;
+  }
+  lucide.createIcons();
+}
+
+// Tab Switching Logic
+function switchTab(tabId) {
+  activeTab = tabId;
+  
+  // Hide all tabs
+  ['feed', 'submit', 'chat', 'admin', 'logs'].forEach(id => {
+    const tabEl = document.getElementById(`tab-${id}`);
+    if (tabEl) tabEl.classList.add('hidden');
+    
+    // Update desktop sidebar buttons
+    const btnEl = document.getElementById(`tab-btn-${id}`);
+    if (btnEl) {
+      btnEl.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50";
+    }
+
+    // Update mobile tab buttons
+    const mobBtnEl = document.getElementById(`mobile-tab-${id}`);
+    if (mobBtnEl) {
+      mobBtnEl.className = "mobile-tab-btn flex flex-col items-center gap-1 p-2 text-slate-400";
+    }
+  });
+
+  // Show active tab
+  const activeTabEl = document.getElementById(`tab-${tabId}`);
+  if (activeTabEl) {
+    if (tabId === 'chat') {
+      activeTabEl.classList.remove('hidden');
+      activeTabEl.classList.add('flex');
+      scrollToBottom('chat-messages');
+    } else {
+      activeTabEl.classList.remove('hidden');
+    }
+  }
+
+  // Highlight active desktop button
+  const activeBtnEl = document.getElementById(`tab-btn-${tabId}`);
+  if (activeBtnEl) {
+    activeBtnEl.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-600 text-white";
+  }
+
+  // Highlight active mobile button
+  const activeMobBtnEl = document.getElementById(`mobile-tab-${tabId}`);
+  if (activeMobBtnEl) {
+    activeMobBtnEl.className = "mobile-tab-btn flex flex-col items-center gap-1 p-2 text-indigo-400";
+  }
+
+  // Special checks for Admin tab
+  if (tabId === 'admin') {
+    renderAdminPanel();
+  }
+}
+
+// Supabase OAuth Modal Controls
+function openOAuthModal() {
+  syncConfigUI();
+  const modal = document.getElementById('oauth-modal');
+  const card = document.getElementById('oauth-modal-card');
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    card.classList.remove('scale-95', 'opacity-0');
+    card.classList.add('scale-100', 'opacity-100');
+  }, 50);
+}
+
+function closeOAuthModal() {
+  const modal = document.getElementById('oauth-modal');
+  const card = document.getElementById('oauth-modal-card');
+  card.classList.remove('scale-100', 'opacity-100');
+  card.classList.add('scale-95', 'opacity-0');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 300);
+}
+
+function quickFillEmail(email) {
+  document.getElementById('oauth-email').value = email;
+}
+
+// Simulated Supabase OAuth Handshake (GitHub / Email Flow)
+function submitOAuthLogin() {
+  const email = document.getElementById('oauth-email').value.trim();
+  if (!email) {
+    showToast('Please enter a valid email address.', 'error');
+    return;
+  }
+
+  // 1. Simulate OIDC Discovery Endpoint Call
+  NetworkLogger.log(
+    'GET',
+    `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/.well-known/openid-configuration`,
+    null,
+    {
+      issuer: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1`,
+      authorization_endpoint: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/oauth/authorize`,
+      token_endpoint: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/oauth/token`,
+      jwks_uri: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/.well-known/jwks.json`,
+      response_types_supported: ['code', 'token', 'id_token']
+    }
+  );
+
+  // 2. Simulate OAuth Authorization Request
+  setTimeout(() => {
+    NetworkLogger.log(
+      'POST',
+      `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/oauth/authorize`,
+      { client_id: appConfig.supabaseClientId, response_type: 'code', redirect_uri: window.location.origin, scope: 'openid email profile' },
+      { code: 'sb_auth_code_' + Math.random().toString(36).substr(2, 9) }
+    );
+  }, 400);
+
+  // 3. Simulate Token Exchange
+  setTimeout(() => {
+    const mockJwtPayload = {
+      iss: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1`,
+      sub: 'usr_' + Math.random().toString(36).substr(2, 9),
+      email: email,
+      email_verified: true,
+      role: email === 'kfmughal79@gmail.com' ? 'admin' : 'authenticated',
+      exp: Math.floor(Date.now() / 1000) + 3600
+    };
+
+    NetworkLogger.log(
+      'POST',
+      `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/oauth/token`,
+      { grant_type: 'authorization_code', code: 'sb_auth_code_...' },
+      {
+        access_token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.' + btoa(JSON.stringify(mockJwtPayload)) + '.signature',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        refresh_token: 'sb_refresh_token_abc123'
+      }
+    );
+  }, 800);
+
+  // 4. Simulate JWKS Verification
+  setTimeout(() => {
+    NetworkLogger.log(
+      'GET',
+      `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/.well-known/jwks.json`,
+      null,
+      {
+        keys: [
+          {
+            kty: 'RSA',
+            use: 'sig',
+            kid: '1',
+            alg: 'RS256',
+            n: 'u1W_7y8i...',
+            e: 'AQAB'
+          }
+        ]
+      }
+    );
+
+    // Complete Login State
+    currentUser = {
+      email: email,
+      role: email === 'kfmughal79@gmail.com' ? 'admin' : 'user',
+      avatar: email === 'kfmughal79@gmail.com' 
+        ? 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80'
+        : `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`,
+      name: email.split('@')[0]
+    };
+
+    StorageHelper.save('user', currentUser);
+    renderAuthHeader();
+    renderAdminPanel();
+    updateAdminBadge();
+    closeOAuthModal();
+    AudioEngine.playSuccess();
+    showToast(`Successfully logged in as ${email}!`, 'success');
+  }, 1200);
+}
+
+// Simulated Google OAuth Handshake using Google Client ID
+function submitGoogleOAuthLogin() {
+  const email = document.getElementById('oauth-email').value.trim() || 'google.user@gmail.com';
+
+  // 1. Simulate Google OAuth Authorization Request
+  NetworkLogger.log(
+    'GET',
+    'https://accounts.google.com/o/oauth2/v2/auth',
+    {
+      client_id: appConfig.googleClientId,
+      redirect_uri: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/callback`,
+      response_type: 'code',
+      scope: 'openid profile email',
+      state: 'sb_google_state_xyz'
+    },
+    {
+      status: 'Redirecting to Google Sign-In Consent Screen...'
+    }
+  );
+
+  // 2. Simulate Google Callback to Supabase
+  setTimeout(() => {
+    NetworkLogger.log(
+      'POST',
+      `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/callback`,
+      {
+        code: 'google_auth_code_gks18r3o0ogkogmld6i2udg8v26m18bm',
+        state: 'sb_google_state_xyz'
+      },
+      {
+        session: 'active',
+        provider: 'google'
+      }
+    );
+  }, 400);
+
+  // 3. Simulate Supabase Token Exchange
+  setTimeout(() => {
+    const mockJwtPayload = {
+      iss: `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1`,
+      sub: 'usr_google_' + Math.random().toString(36).substr(2, 9),
+      email: email,
+      email_verified: true,
+      role: email === 'kfmughal79@gmail.com' ? 'admin' : 'authenticated',
+      exp: Math.floor(Date.now() / 1000) + 3600
+    };
+
+    NetworkLogger.log(
+      'POST',
+      `https://${encodeURIComponent(appConfig.supabaseClientId)}.supabase.co/auth/v1/oauth/token`,
+      {
+        grant_type: 'authorization_code',
+        code: 'google_auth_code_...',
+        client_id: appConfig.supabaseClientId
+      },
+      {
+        access_token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.' + btoa(JSON.stringify(mockJwtPayload)) + '.signature',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        refresh_token: 'sb_refresh_token_google_abc123'
+      }
+    );
+
+    // Complete Login State
+    currentUser = {
+      email: email,
+      role: email === 'kfmughal79@gmail.com' ? 'admin' : 'user',
+      avatar: email === 'kfmughal79@gmail.com' 
+        ? 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80'
+        : `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`,
+      name: email.split('@')[0]
+    };
+
+    StorageHelper.save('user', currentUser);
+    renderAuthHeader();
+    renderAdminPanel();
+    updateAdminBadge();
+    closeOAuthModal();
+    AudioEngine.playSuccess();
+    showToast(`Successfully logged in via Google as ${email}!`, 'success');
+  }, 900);
+}
+
+function handleLogout() {
+  currentUser = null;
+  StorageHelper.save('user', null);
+  renderAuthHeader();
+  renderAdminPanel();
+  updateAdminBadge();
+  AudioEngine.playTrash();
+  showToast('Logged out successfully.', 'info');
+}
+
+function triggerAdminQuickLogin() {
+  openOAuthModal();
+  quickFillEmail('kfmughal79@gmail.com');
+}
+
+// Render Gallery Picker in Submit Form
+function renderGalleryPicker() {
+  const picker = document.getElementById('gallery-picker');
+  if (!picker) return;
+
+  picker.innerHTML = AppStore.galleryImages.map(img => `
+    <div onclick="selectGalleryImage('${img.id}', '${img.url}')" id="gal-card-${img.id}" class="group relative aspect-video rounded-xl overflow-hidden border-2 border-slate-800 hover:border-indigo-500 cursor-pointer transition-all">
+      <img src="${img.url}" alt="${img.title}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300">
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent flex items-end p-2">
+        <span class="text-[10px] font-semibold text-slate-300 truncate">${img.title}</span>
+      </div>
+      <div class="absolute top-2 right-2 bg-indigo-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all" id="gal-check-${img.id}">
+        <i data-lucide="check" class="w-3 h-3"></i>
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+function selectGalleryImage(id, url) {
+  // Deselect previous
+  if (selectedGalleryImage) {
+    const prevCard = document.getElementById(`gal-card-${selectedGalleryImage.id}`);
+    const prevCheck = document.getElementById(`gal-check-${selectedGalleryImage.id}`);
+    if (prevCard) prevCard.classList.remove('border-indigo-500', 'ring-2', 'ring-indigo-500/50');
+    if (prevCheck) prevCheck.classList.add('opacity-0');
+  }
+
+  // Select new
+  selectedGalleryImage = { id, url };
+  const card = document.getElementById(`gal-card-${id}`);
+  const check = document.getElementById(`gal-check-${id}`);
+  if (card) card.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-500/50');
+  if (check) check.classList.remove('opacity-0');
+
+  AudioEngine.playPop();
+}
+
+// Handle Custom File Upload
+function handleFileChange(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    customUploadedFile = {
+      name: file.name,
+      dataUrl: e.target.result,
+      type: file.type
+    };
+
+    // Show preview
+    const previewContainer = document.getElementById('file-preview-container');
+    const previewImg = document.getElementById('file-preview-img');
+    const previewName = document.getElementById('file-preview-name');
+    const uploadLabel = document.getElementById('upload-label');
+
+    previewContainer.classList.remove('hidden');
+    uploadLabel.textContent = "Custom file loaded!";
+
+    if (file.type.startsWith('image/')) {
+      previewImg.src = e.target.result;
+      previewImg.classList.remove('hidden');
+    } else {
+      previewImg.classList.add('hidden');
+    }
+    previewName.textContent = file.name;
+    AudioEngine.playPop();
+  };
+  reader.readAsDataURL(file);
+}
+
+// Handle Submission Form Submit
+function handleFormSubmit(event) {
+  event.preventDefault();
+
+  if (!currentUser) {
+    showToast('You must be logged in to submit a request.', 'error');
+    openOAuthModal();
+    return;
+  }
+
+  const description = document.getElementById('submit-description').value.trim();
+  const message = document.getElementById('submit-message').value.trim();
+
+  // Determine image source (custom upload overrides gallery selection)
+  let finalImage = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'; // fallback
+  if (customUploadedFile && customUploadedFile.type.startsWith('image/')) {
+    finalImage = customUploadedFile.dataUrl;
+  } else if (selectedGalleryImage) {
+    finalImage = selectedGalleryImage.url;
+  }
+
+  const newSubmission = {
+    id: 'sub-' + Date.now(),
+    email: currentUser.email,
+    description,
+    message,
+    image: finalImage,
+    file: customUploadedFile ? { name: customUploadedFile.name, type: customUploadedFile.type } : null,
+    status: 'pending',
+    timestamp: new Date().toISOString()
+  };
+
+  submissions.unshift(newSubmission);
+  StorageHelper.save('submissions', submissions);
+
+  // Reset form
+  document.getElementById('submission-form').reset();
+  selectedGalleryImage = null;
+  customUploadedFile = null;
+  document.getElementById('file-preview-container').classList.add('hidden');
+  document.getElementById('upload-label').textContent = "Click to upload custom file";
+  renderGalleryPicker();
+
+  updateAdminBadge();
+  AudioEngine.playSuccess();
+  showToast('Submission sent to admin queue!', 'success');
+  switchTab('feed');
+}
+
+// Render Approved Feed
+function renderFeed() {
+  const grid = document.getElementById('feed-grid');
+  if (!grid) return;
+
+  const filter = document.getElementById('feed-filter')?.value || 'all';
+  let approvedItems = submissions.filter(s => s.status === 'approved');
+
+  if (filter === 'recent') {
+    approvedItems.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+
+  if (approvedItems.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full flex flex-col items-center justify-center py-16 text-center space-y-3">
+        <div class="bg-slate-900 p-4 rounded-full border border-slate-800 text-slate-500">
+          <i data-lucide="image-off" class="w-10 h-10"></i>
+        </div>
+        <p class="text-slate-400 text-sm">No approved submissions yet. Be the first to submit!</p>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  grid.innerHTML = approvedItems.map(item => `
+    <div class="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all group flex flex-col h-full">
+      <div class="relative aspect-video overflow-hidden cursor-pointer" onclick="openLightbox('${item.image}', '${item.description.replace(/'/g, "\\'")}')">
+        <img src="${item.image}" alt="Submission" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+        <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-mono text-slate-300 border border-slate-800">
+          Approved
+        </div>
+      </div>
+      <div class="p-5 flex flex-col flex-1 justify-between space-y-4">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+              ${item.email.charAt(0).toUpperCase()}
+            </div>
+            <span class="text-xs font-semibold text-slate-300 truncate">${item.email}</span>
+          </div>
+          <p class="text-sm text-slate-200 line-clamp-3">${item.description}</p>
+        </div>
+        <div class="pt-4 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-500">
+          <span class="flex items-center gap-1">
+            <i data-lucide="clock" class="w-3 h-3"></i> ${formatTimeAgo(item.timestamp)}
+          </span>
+          ${item.file ? `<span class="flex items-center gap-1 text-indigo-400"><i data-lucide="paperclip" class="w-3 h-3"></i> Attachment</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+// Render Global Chat
+function renderChat() {
+  const chatContainer = document.getElementById('chat-messages');
+  if (!chatContainer) return;
+
+  chatContainer.innerHTML = chatMessages.map(msg => {
+    const isMe = currentUser && currentUser.email === msg.email;
+    return `
+      <div class="flex gap-3 ${isMe ? 'flex-row-reverse' : ''}">
+        <img src="${msg.avatar}" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-slate-800 shrink-0">
+        <div class="flex flex-col max-w-[70%] ${isMe ? 'items-end' : ''}">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-semibold text-slate-300">${msg.email}</span>
+            <span class="text-[9px] text-slate-500">${formatTime(msg.timestamp)}</span>
+          </div>
+          <div class="px-4 py-2.5 rounded-2xl text-sm ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-100 rounded-tl-none'}">
+            ${msg.message}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Render active users list
+  const activeUsersList = document.getElementById('active-users-list');
+  if (activeUsersList) {
+    activeUsersList.innerHTML = AppStore.activeUsers.map(user => `
+      <div class="flex items-center gap-3 p-1.5 rounded-lg hover:bg-slate-800/30 transition-all">
+        <div class="relative">
+          <img src="${user.avatar}" alt="Avatar" class="w-7 h-7 rounded-lg object-cover">
+          <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-slate-950 ${user.status === 'online' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+        </div>
+        <div class="text-left truncate">
+          <p class="text-xs font-medium text-slate-300 truncate">${user.name}</p>
+          <p class="text-[9px] text-slate-500 truncate">${user.email}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  scrollToBottom('chat-messages');
+}
+
+// Send Chat Message
+function handleSendChatMessage(event) {
+  event.preventDefault();
+
+  if (!currentUser) {
+    showToast('You must be logged in to chat.', 'error');
+    openOAuthModal();
+    return;
+  }
+
+  const input = document.getElementById('chat-input');
+  const messageText = input.value.trim();
+  if (!messageText) return;
+
+  const newMessage = {
+    id: 'msg-' + Date.now(),
+    email: currentUser.email,
+    message: messageText,
+    timestamp: new Date().toISOString(),
+    avatar: currentUser.avatar
+  };
+
+  chatMessages.push(newMessage);
+  StorageHelper.save('chat_messages', chatMessages);
+  input.value = '';
+  renderChat();
+  AudioEngine.playPop();
+}
+
+// Render Admin Panel
+function renderAdminPanel() {
+  const accessDenied = document.getElementById('admin-access-denied');
+  const dashboard = document.getElementById('admin-dashboard');
+  const pendingList = document.getElementById('admin-pending-list');
+
+  const isAdmin = currentUser && currentUser.email === 'kfmughal79@gmail.com';
+
+  if (!isAdmin) {
+    accessDenied.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+    return;
+  } else {
+    accessDenied.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+  }
+
+  const pendingItems = submissions.filter(s => s.status === 'pending');
+  document.getElementById('admin-queue-count').textContent = pendingItems.length;
+  document.getElementById('admin-pending-list').innerHTML = '';
+
+  if (pendingItems.length === 0) {
+    pendingList.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-12 text-center space-y-3">
+        <div class="bg-slate-950 p-3 rounded-full border border-slate-800 text-slate-600">
+          <i data-lucide="inbox" class="w-8 h-8"></i>
+        </div>
+        <p class="text-slate-400 text-sm">All caught up! No pending submissions.</p>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  pendingList.innerHTML = pendingItems.map(item => `
+    <div class="p-6 flex flex-col lg:flex-row gap-6 items-start justify-between hover:bg-slate-900/20 transition-all">
+      <div class="flex flex-col sm:flex-row gap-4 flex-1">
+        <img src="${item.image}" alt="Submission Preview" class="w-24 h-24 object-cover rounded-xl border border-slate-800 cursor-pointer" onclick="openLightbox('${item.image}', '${item.description.replace(/'/g, "\\'")}')">
+        <div class="space-y-2 flex-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-indigo-400 font-mono">${item.email}</span>
+            <span class="text-[10px] text-slate-500">• ${formatTimeAgo(item.timestamp)}</span>
+          </div>
+          <p class="text-sm text-slate-200 font-medium">Description: <span class="text-slate-400 font-normal">${item.description}</span></p>
+          <p class="text-sm text-slate-200 font-medium">Message: <span class="text-slate-400 font-normal italic">"${item.message}"</span></p>
+          ${item.file ? `
+            <div class="inline-flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-lg text-xs text-indigo-400">
+              <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+              <span>${item.file.name}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      <div class="flex sm:flex-col gap-2 w-full lg:w-auto shrink-0">
+        <button onclick="approveSubmission('${item.id}')" class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Approve
+        </button>
+        <button onclick="rejectSubmission('${item.id}')" class="flex-1 lg:flex-none bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 border border-rose-500/30 hover:border-transparent">
+          <i data-lucide="trash-2" class="w-4 h-4"></i> Reject (Delete)
+        </button>
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+// Approve Submission
+function approveSubmission(id) {
+  const index = submissions.findIndex(s => s.id === id);
+  if (index !== -1) {
+    submissions[index].status = 'approved';
+    StorageHelper.save('submissions', submissions);
+    renderAdminPanel();
+    renderFeed();
+    updateAdminBadge();
+    AudioEngine.playSuccess();
+    showToast('Submission approved and published to feed!', 'success');
+  }
+}
+
+// Reject Submission (Always Delete)
+function rejectSubmission(id) {
+  const index = submissions.findIndex(s => s.id === id);
+  if (index !== -1) {
+    submissions.splice(index, 1);
+    StorageHelper.save('submissions', submissions);
+    renderAdminPanel();
+    renderFeed();
+    updateAdminBadge();
+    AudioEngine.playTrash();
+    showToast('Submission rejected and permanently deleted.', 'info');
+  }
+}
+
+// Update Admin Badge Count
+function updateAdminBadge() {
+  const pendingCount = submissions.filter(s => s.status === 'pending').length;
+  const badge = document.getElementById('admin-badge-count');
+  if (badge) {
+    if (pendingCount > 0) {
+      badge.textContent = pendingCount;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+}
+
+// Render OAuth Logs
+function renderLogs(logs) {
+  const consoleOutput = document.getElementById('logs-console-output');
+  if (!consoleOutput) return;
+
+  if (logs.length === 0) {
+    consoleOutput.innerHTML = `<div class="text-slate-500 italic">No network logs yet. Trigger a login to see the Supabase OAuth handshake in real-time.</div>`;
+    return;
+  }
+
+  consoleOutput.innerHTML = logs.map(log => `
+    <div class="border-b border-slate-900 pb-3 space-y-1.5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${log.method === 'GET' ? 'bg-sky-500/20 text-sky-400' : 'bg-emerald-500/20 text-emerald-400'}">${log.method}</span>
+          <span class="text-slate-400 font-mono text-[11px] truncate max-w-[300px] sm:max-w-md" title="${log.url}">${log.url}</span>
+        </div>
+        <span class="text-[10px] text-slate-500">${formatTime(log.timestamp)}</span>
+      </div>
+      ${log.payload ? `
+        <div class="bg-slate-900 p-2 rounded-lg text-[10px] text-slate-400 overflow-x-auto">
+          <span class="text-indigo-400 font-bold">Payload:</span>
+          <pre class="mt-1">${log.payload}</pre>
+        </div>
+      ` : ''}
+      ${log.response ? `
+        <div class="bg-slate-900 p-2 rounded-lg text-[10px] text-slate-400 overflow-x-auto">
+          <span class="text-emerald-400 font-bold">Response (Status ${log.status}):</span>
+          <pre class="mt-1">${log.response}</pre>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function clearLogs() {
+  NetworkLogger.clear();
+}
+
+// Lightbox Controls
+function openLightbox(url, caption) {
+  const modal = document.getElementById('lightbox-modal');
+  const img = document.getElementById('lightbox-img');
+  const cap = document.getElementById('lightbox-caption');
+
+  img.src = url;
+  cap.textContent = caption || '';
+  modal.classList.remove('hidden');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox-modal').classList.add('hidden');
+}
+
+// Toast Notification System
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto max-w-sm ${type === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-200' : type === 'error' ? 'bg-rose-950/90 border-rose-500/30 text-rose-200' : 'bg-slate-900/90 border-slate-800 text-slate-200'}`;
+  
+  const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info';
+  
+  toast.innerHTML = `
+    <i data-lucide="${icon}" class="w-5 h-5 shrink-0 ${type === 'success' ? 'text-emerald-400' : type === 'error' ? 'text-rose-400' : 'text-indigo-400'}"></i>
+    <p class="text-xs font-medium">${message}</p>
+  `;
+
+  container.appendChild(toast);
+  lucide.createIcons();
+
+  // Animate in
+  setTimeout(() => {
+    toast.classList.remove('translate-y-2', 'opacity-0');
+  }, 50);
+
+  // Animate out
+  setTimeout(() => {
+    toast.classList.add('translate-y-2', 'opacity-0');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 4000);
+}
+
+// Helper: Scroll to bottom of element
+function scrollToBottom(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollTop = el.scrollHeight;
+  }
+}
+
+// Helper: Format Time
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Helper: Format Time Ago
+function formatTimeAgo(isoString) {
+  const seconds = Math.floor((new Date() - new Date(isoString)) / 1000);
+  let interval = Math.floor(seconds / 31536000);
+
+  if (interval >= 1) return interval + "y ago";
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) return interval + "mo ago";
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return interval + "d ago";
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return interval + "h ago";
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return interval + "m ago";
+  return "just now";
+}
+
+// Simulated Chat Activity to make the room feel alive
+function startSimulatedChatActivity() {
+  const simulatedMessages = [
+    "Wow, that new abstract submission looks incredible!",
+    "Can anyone recommend a good cyberpunk color palette?",
+    "Just logged in via Supabase, the OAuth flow is super smooth!",
+    "Admin, check the queue! I just submitted a new design.",
+    "Is the global chat room active today? Hello from Berlin!"
+  ];
+
+  setInterval(() => {
+    // Only simulate if we are on the chat tab or active
+    const randomUser = AppStore.activeUsers[Math.floor(Math.random() * AppStore.activeUsers.length)];
+    if (randomUser.email === (currentUser ? currentUser.email : '')) return; // don't simulate self
+
+    const randomMsg = simulatedMessages[Math.floor(Math.random() * simulatedMessages.length)];
+    
+    const newMessage = {
+      id: 'msg-sim-' + Date.now(),
+      email: randomUser.email,
+      message: randomMsg,
+      timestamp: new Date().toISOString(),
+      avatar: randomUser.avatar
+    };
+
+    chatMessages.push(newMessage);
+    // Keep chat messages array under 50 items to prevent memory bloat
+    if (chatMessages.length > 50) chatMessages.shift();
+
+    StorageHelper.save('chat_messages', chatMessages);
+    
+    if (activeTab === 'chat') {
+      renderChat();
+      AudioEngine.playPop();
+    }
+  }, 15000); // every 15 seconds
+}
+
+</script></body>
+</html>
